@@ -6,7 +6,7 @@ class LoginScreen extends StatelessWidget {
 
   final TextEditingController _username = TextEditingController();
   final TextEditingController _password = TextEditingController();
-  final LoginController _controller = LoginController();
+  // final LoginController _controller = LoginController();
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,7 @@ class LoginScreen extends StatelessWidget {
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: () {
-                _controller.login(
+                LoginController.login(
                   context,
                   _username.text,
                   _password.text,
