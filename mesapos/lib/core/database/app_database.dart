@@ -18,7 +18,7 @@ class AppDatabase {
 
     return openDatabase(
       path,
-      version: 2, // ⬅️ MUST INCREMENT
+      version: 3, // ⬅️ VERSION BUMP (IMPORTANT)
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -29,6 +29,7 @@ class AppDatabase {
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    // Existing table creation (from v1 → v2)
     if (oldVersion < 2) {
       await db.execute('''
         CREATE TABLE IF NOT EXISTS menu_items (
@@ -42,6 +43,14 @@ class AppDatabase {
           synced INTEGER
         )
       ''');
+    }
+
+    // ✅ NEW: Prevent duplicate menu names (case-insensitive)
+    if (oldVersion < 3) {
+      await db.execute(
+        'CREATE UNIQUE INDEX IF NOT EXISTS idx_menu_name '
+        'ON menu_items(LOWER(name))',
+      );
     }
   }
 
@@ -68,5 +77,11 @@ class AppDatabase {
         synced INTEGER
       )
     ''');
+
+    // ✅ Ensure uniqueness even on fresh install
+    await db.execute(
+      'CREATE UNIQUE INDEX IF NOT EXISTS idx_menu_name '
+      'ON menu_items(LOWER(name))',
+    );
   }
 }

@@ -33,7 +33,7 @@ class _MenuManagementScreenState extends State<MenuManagementScreen> {
     setState(() => _items = data);
   }
 
-  /// 🔒 SAFE IMAGE COPY
+  /// 🔒 SAFE IMAGE COPY (gallery → app storage)
   Future<String> _persistImage(String sourcePath) async {
     final dir = await getApplicationDocumentsDirectory();
     final imagesDir = Directory(p.join(dir.path, 'menu_images'));
@@ -96,7 +96,7 @@ class _MenuManagementScreenState extends State<MenuManagementScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                /// IMAGE PICKER (SAFE)
+                /// IMAGE PICKER
                 GestureDetector(
                   onTap: () async {
                     final picked =
@@ -114,19 +114,20 @@ class _MenuManagementScreenState extends State<MenuManagementScreen> {
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: Colors.grey.shade400),
                     ),
-                    child: imagePath == null
-                        ? const Center(
-                            child: Icon(
-                              Icons.image,
-                              size: 48,
-                              color: Colors.grey,
-                            ),
-                          )
-                        : ClipRRect(
+                    child: imagePath != null &&
+                            File(imagePath!).existsSync()
+                        ? ClipRRect(
                             borderRadius: BorderRadius.circular(8),
                             child: Image.file(
                               File(imagePath!),
                               fit: BoxFit.cover,
+                            ),
+                          )
+                        : const Center(
+                            child: Icon(
+                              Icons.image,
+                              size: 48,
+                              color: Colors.grey,
                             ),
                           ),
                   ),
@@ -160,11 +161,14 @@ class _MenuManagementScreenState extends State<MenuManagementScreen> {
               onPressed: () => Navigator.pop(context),
               child: const Text('Cancel'),
             ),
+
+            /// 💾 SAVE BUTTON (WITH DUPLICATE CHECK)
             ElevatedButton(
               onPressed: () async {
                 final name = nameCtrl.text.trim();
                 final price = double.tryParse(priceCtrl.text);
 
+                // 1️⃣ Basic validation
                 if (name.isEmpty || price == null || price <= 0) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -175,6 +179,23 @@ class _MenuManagementScreenState extends State<MenuManagementScreen> {
                   return;
                 }
 
+                // 2️⃣ 🔒 Duplicate name prevention
+                final exists = await _menuDao.nameExists(
+                  name,
+                  excludeId: item?.id,
+                );
+
+                if (exists) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content:
+                          Text('Menu item name already exists'),
+                    ),
+                  );
+                  return;
+                }
+
+                // 3️⃣ Insert / Update
                 if (item == null) {
                   await _menuDao.insert(
                     MenuItemModel(
@@ -271,8 +292,10 @@ class _MenuManagementScreenState extends State<MenuManagementScreen> {
                       onPressed: () => _openDialog(item: item),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.delete,
-                          color: Colors.redAccent),
+                      icon: const Icon(
+                        Icons.delete,
+                        color: Colors.redAccent,
+                      ),
                       onPressed: () => _confirmDelete(item),
                     ),
                   ],
