@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/platform/routes.dart';
-import 'widgets/admin_layout.dart';
+import '../widgets/admin_layout.dart';
 
 class AdminDashboard extends StatelessWidget {
   const AdminDashboard({super.key});

@@ -3,9 +3,9 @@ import 'core/database/database_provider.dart';
 import 'core/platform/routes.dart';
 import 'features/auth/login_screen.dart';
 import 'features/admin/admin_dashboard.dart';
-import 'features/admin/menu_management.dart';
-import 'features/admin/staff_management.dart';
-import 'features/admin/reports_management.dart';
+import 'features/menu_management/menu_management.dart';
+import 'features/staff_management/staff_management.dart';
+import 'features/reports_management/reports_management.dart';
 import 'features/staff/staff_dashboard.dart';
 
 void main() async {

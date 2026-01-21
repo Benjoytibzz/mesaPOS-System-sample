@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/models/menu_item_model.dart';
 import '../../core/services/menu_service.dart';
-import 'widgets/admin_layout.dart';
+import '../widgets/admin_layout.dart';
 
 class MenuManagementScreen extends StatefulWidget {
   const MenuManagementScreen({super.key});
