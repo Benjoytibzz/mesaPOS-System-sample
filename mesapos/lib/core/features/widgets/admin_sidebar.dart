@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/platform/routes.dart';
+import '../../platform/routes.dart';
 
 class AdminSidebar extends StatelessWidget {
   final String activeRoute;
