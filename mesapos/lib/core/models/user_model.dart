@@ -3,6 +3,10 @@ class UserModel {
   final String username;
   final String passwordHash;
   final String role;
+  final String firstName;
+  final String lastName;
+  final String? imagePath;
+  final int isActive;
   final int synced;
 
   UserModel({
@@ -10,6 +14,10 @@ class UserModel {
     required this.username,
     required this.passwordHash,
     required this.role,
+    required this.firstName,
+    required this.lastName,
+    this.imagePath,
+    this.isActive = 1,
     this.synced = 0,
   });
 
@@ -19,6 +27,10 @@ class UserModel {
       'username': username,
       'password_hash': passwordHash,
       'role': role,
+      'first_name': firstName,
+      'last_name': lastName,
+      'image_path': imagePath,
+      'is_active': isActive,
       'synced': synced,
     };
   }
@@ -29,7 +41,11 @@ class UserModel {
       username: map['username'],
       passwordHash: map['password_hash'],
       role: map['role'],
-      synced: map['synced'],
+      firstName: map['first_name'] ?? '',
+      lastName: map['last_name'] ?? '',
+      imagePath: map['image_path'],
+      isActive: map['is_active'] ?? 1,
+      synced: map['synced'] ?? 0,
     );
   }
 }

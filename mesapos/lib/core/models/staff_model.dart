@@ -1,30 +1,47 @@
-class Staff {
-  final String id;
-  final String name;
+class StaffModel {
+  final int? id;
   final String username;
+  final String firstName;
+  final String lastName;
+  final String passwordHash;
   final String role;
-  final bool isActive;
+  final int synced;     // 0 = not synced, 1 = synced
+  final int isActive;   // 0 = inactive, 1 = active
 
-  Staff({
-    required this.id,
-    required this.name,
+  StaffModel({
+    this.id,
     required this.username,
+    required this.firstName,
+    required this.lastName,
+    required this.passwordHash,
     required this.role,
-    this.isActive = true,
+    this.synced = 0,
+    this.isActive = 1,
   });
 
-  Staff copyWith({
-    String? name,
-    String? username,
-    String? role,
-    bool? isActive,
-  }) {
-    return Staff(
-      id: id,
-      name: name ?? this.name,
-      username: username ?? this.username,
-      role: role ?? this.role,
-      isActive: isActive ?? this.isActive,
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'username': username,
+      'first_name': firstName,
+      'last_name': lastName,
+      'password_hash': passwordHash,
+      'role': role,
+      'synced': synced,
+      'is_active': isActive,
+    };
+  }
+
+  factory StaffModel.fromMap(Map<String, dynamic> map) {
+    return StaffModel(
+      id: map['id'],
+      username: map['username'],
+      firstName: map['first_name'],
+      lastName: map['last_name'],
+      passwordHash: map['password_hash'],
+      role: map['role'],
+      synced: map['synced'],
+      isActive: map['is_active'],
     );
   }
 }
