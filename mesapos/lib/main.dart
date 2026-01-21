@@ -6,6 +6,7 @@ import 'core/features/menu_management/menu_management.dart';
 import 'core/features/staff_management/staff_management.dart';
 import 'core/features/reports_management/reports_management.dart';
 import 'core/features/staff/staff_dashboard.dart';
+import 'core/features/settings_management/settings_management.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,6 +28,7 @@ class POSApp extends StatelessWidget {
         AppRoutes.menuManagement: (_) => const MenuManagementScreen(),
         AppRoutes.staffManagement: (_) => const StaffManagementScreen(),
         AppRoutes.reportsManagement: (_) => const ReportsManagementScreen(),
+        AppRoutes.settingsManagement: (_) => const SettingsManagementScreen(),
         AppRoutes.staffDashboard: (_) => const StaffDashboard(),
       },
     );

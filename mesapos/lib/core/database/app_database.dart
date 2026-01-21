@@ -18,7 +18,7 @@ class AppDatabase {
 
     return openDatabase(
       path,
-      version: 5, // ⬅️ VERSION BUMP (add user image)
+      version: 6, // ⬅️ VERSION BUMP (add settings + store image)
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -72,11 +72,16 @@ class AppDatabase {
       );
     }
 
-    // ✅ v4 → v5 : add staff image
+    // v4 → v5 : staff image
     if (oldVersion < 5) {
       await db.execute(
         "ALTER TABLE users ADD COLUMN image_path TEXT",
       );
+    }
+
+    // ✅ v5 → v6 : settings table (store info, tax, service, image)
+    if (oldVersion < 6) {
+      await _createSettingsTable(db);
     }
   }
 
@@ -117,6 +122,43 @@ class AppDatabase {
     await db.execute(
       'CREATE UNIQUE INDEX IF NOT EXISTS idx_menu_name '
       'ON menu_items(LOWER(name))',
+    );
+
+    // SETTINGS
+    await _createSettingsTable(db);
+  }
+
+  /* --------------------------------------------------------
+   * SETTINGS TABLE
+   * ------------------------------------------------------ */
+  Future<void> _createSettingsTable(Database db) async {
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS settings (
+        id INTEGER PRIMARY KEY,
+        store_name TEXT,
+        address TEXT,
+        contact_number TEXT,
+        store_image_path TEXT,
+        tax_percent REAL,
+        service_charge REAL,
+        updated_at TEXT
+      )
+    ''');
+
+    // Ensure single-row settings (id = 1)
+    await db.insert(
+      'settings',
+      {
+        'id': 1,
+        'store_name': '',
+        'address': '',
+        'contact_number': '',
+        'store_image_path': null,
+        'tax_percent': 0,
+        'service_charge': 0,
+        'updated_at': DateTime.now().toIso8601String(),
+      },
+      conflictAlgorithm: ConflictAlgorithm.ignore,
     );
   }
 }
