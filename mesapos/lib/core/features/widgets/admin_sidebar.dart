@@ -62,7 +62,7 @@ class AdminSidebar extends StatelessWidget {
               context,
               Icons.settings,
               'Settings',
-              null,
+              AppRoutes.settingsManagement,
             ),
 
             const Divider(color: Colors.white24),
