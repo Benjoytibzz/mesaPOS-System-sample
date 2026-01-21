@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/platform/routes.dart';
+import '../../platform/routes.dart';
 import '../widgets/admin_layout.dart';
 
 class StaffManagementScreen extends StatelessWidget {

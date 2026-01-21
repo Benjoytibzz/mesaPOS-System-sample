@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../core/ui/responsive.dart';
-import './admin_sidebar.dart';
-import './admin_drawer.dart';
+import '../../ui/responsive.dart';
+import 'admin_sidebar.dart';
+import 'admin_drawer.dart';
 
 class AdminLayout extends StatelessWidget {
   final Widget child;

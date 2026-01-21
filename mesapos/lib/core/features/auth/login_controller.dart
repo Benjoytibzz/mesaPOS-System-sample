@@ -1,4 +1,4 @@
-import '../../core/platform/routes.dart';
+import '../../platform/routes.dart';
 import 'package:flutter/material.dart';
 
 class LoginController {
