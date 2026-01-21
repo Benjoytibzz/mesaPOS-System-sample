@@ -1,5 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
 
 import '../../services/menu_dao.dart';
 import '../../models/menu_model.dart';
@@ -14,6 +17,8 @@ class MenuManagementScreen extends StatefulWidget {
 
 class _MenuManagementScreenState extends State<MenuManagementScreen> {
   final MenuDao _menuDao = MenuDao();
+  final ImagePicker _picker = ImagePicker();
+
   List<MenuItemModel> _items = [];
 
   @override
@@ -26,6 +31,22 @@ class _MenuManagementScreenState extends State<MenuManagementScreen> {
     final data = await _menuDao.getAll();
     if (!mounted) return;
     setState(() => _items = data);
+  }
+
+  /// 🔒 SAFE IMAGE COPY
+  Future<String> _persistImage(String sourcePath) async {
+    final dir = await getApplicationDocumentsDirectory();
+    final imagesDir = Directory(p.join(dir.path, 'menu_images'));
+
+    if (!await imagesDir.exists()) {
+      await imagesDir.create(recursive: true);
+    }
+
+    final fileName =
+        '${DateTime.now().millisecondsSinceEpoch}${p.extension(sourcePath)}';
+
+    final newPath = p.join(imagesDir.path, fileName);
+    return (await File(sourcePath).copy(newPath)).path;
   }
 
   void _confirmDelete(MenuItemModel item) {
@@ -62,6 +83,8 @@ class _MenuManagementScreenState extends State<MenuManagementScreen> {
     final priceCtrl =
         TextEditingController(text: item?.price.toString() ?? '');
 
+    String? imagePath = item?.imagePath;
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -73,6 +96,44 @@ class _MenuManagementScreenState extends State<MenuManagementScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                /// IMAGE PICKER (SAFE)
+                GestureDetector(
+                  onTap: () async {
+                    final picked =
+                        await _picker.pickImage(source: ImageSource.gallery);
+                    if (picked != null) {
+                      final safePath = await _persistImage(picked.path);
+                      setState(() => imagePath = safePath);
+                    }
+                  },
+                  child: Container(
+                    height: 120,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade200,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.grey.shade400),
+                    ),
+                    child: imagePath == null
+                        ? const Center(
+                            child: Icon(
+                              Icons.image,
+                              size: 48,
+                              color: Colors.grey,
+                            ),
+                          )
+                        : ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.file(
+                              File(imagePath!),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
                 TextField(
                   controller: nameCtrl,
                   decoration: const InputDecoration(labelText: 'Item Name'),
@@ -121,6 +182,7 @@ class _MenuManagementScreenState extends State<MenuManagementScreen> {
                       description: descCtrl.text.trim(),
                       price: price,
                       category: 'General',
+                      imagePath: imagePath,
                     ),
                   );
                 } else {
@@ -131,7 +193,7 @@ class _MenuManagementScreenState extends State<MenuManagementScreen> {
                       description: descCtrl.text.trim(),
                       price: price,
                       category: item.category,
-                      imagePath: item.imagePath,
+                      imagePath: imagePath,
                       isAvailable: item.isAvailable,
                     ),
                   );
@@ -170,14 +232,15 @@ class _MenuManagementScreenState extends State<MenuManagementScreen> {
 
             return Card(
               child: ListTile(
-                leading: item.imagePath != null
+                leading: item.imagePath != null &&
+                        File(item.imagePath!).existsSync()
                     ? Image.file(
                         File(item.imagePath!),
                         width: 48,
                         height: 48,
                         fit: BoxFit.cover,
                       )
-                    : const Icon(Icons.fastfood),
+                    : const Icon(Icons.image),
                 title: Text(item.name),
                 subtitle: Text(
                   '${item.description}\n₱${item.price.toStringAsFixed(2)}',
