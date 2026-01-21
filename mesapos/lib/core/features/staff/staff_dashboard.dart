@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/services/logout_service.dart';
+import '../../services/logout_service.dart';
 
 class StaffDashboard extends StatelessWidget {
   const StaffDashboard({super.key});

@@ -1,14 +1,19 @@
-import '../database/database_provider.dart';
+import '../../core/database/app_database.dart';
 import '../models/user_model.dart';
-import '../security/crypto_util.dart';
 
-class AuthService {
-  Future<UserModel?> login(String username, String password) async {
-    final user = await db.getUser(username);
-    if (user == null) return null;
+class UserDao {
+  Future<UserModel?> login(String username) async {
+    final db = await AppDatabase.instance.database;
+    final res = await db.query(
+      'users',
+      where: 'username = ?',
+      whereArgs: [username],
+    );
+    return res.isNotEmpty ? UserModel.fromMap(res.first) : null;
+  }
 
-    return CryptoUtil.hashPassword(password) == user.passwordHash
-        ? user
-        : null;
+  Future<void> insert(UserModel user) async {
+    final db = await AppDatabase.instance.database;
+    await db.insert('users', user.toMap());
   }
 }

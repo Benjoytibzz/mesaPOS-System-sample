@@ -1,22 +1,14 @@
 import 'package:flutter/material.dart';
-import 'core/database/database_provider.dart';
 import 'core/platform/routes.dart';
-import 'features/auth/login_screen.dart';
-import 'features/admin/admin_dashboard.dart';
-import 'features/menu_management/menu_management.dart';
-import 'features/staff_management/staff_management.dart';
-import 'features/reports_management/reports_management.dart';
-import 'features/staff/staff_dashboard.dart';
+import 'core/features/auth/login_screen.dart';
+import 'core/features/admin/admin_dashboard.dart';
+import 'core/features/menu_management/menu_management.dart';
+import 'core/features/staff_management/staff_management.dart';
+import 'core/features/reports_management/reports_management.dart';
+import 'core/features/staff/staff_dashboard.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  try {
-    await initDatabase();
-  } catch (e) {
-    debugPrint('DB init failed: $e');
-  }
-
   runApp(const POSApp());
 }
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/platform/routes.dart';
+import '../../platform/routes.dart';
 
 class AdminDrawer extends StatelessWidget {
   const AdminDrawer({super.key, required String activeRoute});
