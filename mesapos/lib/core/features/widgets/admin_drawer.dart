@@ -16,13 +16,40 @@ class AdminDrawer extends StatelessWidget {
             ),
           ),
 
-          _item(context, Icons.dashboard, 'Dashboard',
-              AppRoutes.adminDashboard),
+          _item(
+            context,
+            Icons.dashboard,
+            'Dashboard',
+            AppRoutes.adminDashboard,
+          ),
 
-          _item(context, Icons.restaurant_menu, 'Menu Management', null),
-          _item(context, Icons.people, 'Staff Management', null),
-          _item(context, Icons.bar_chart, 'Reports', null),
-          _item(context, Icons.settings, 'Settings', null),
+          _item(
+            context,
+            Icons.restaurant_menu,
+            'Menu Management',
+            AppRoutes.menuManagement,
+          ),
+
+          _item(
+            context,
+            Icons.people,
+            'Staff Management',
+            AppRoutes.staffManagement,
+          ),
+
+          _item(
+            context,
+            Icons.bar_chart,
+            'Reports',
+            AppRoutes.reportsManagement,
+          ),
+
+          _item(
+            context,
+            Icons.settings,
+            'Settings',
+            AppRoutes.settingsManagement,
+          ),
 
           const Spacer(),
           const Divider(),
@@ -31,7 +58,10 @@ class AdminDrawer extends StatelessWidget {
             leading: const Icon(Icons.logout, color: Colors.red),
             title: const Text('Logout'),
             onTap: () {
-              Navigator.pushReplacementNamed(context, AppRoutes.login);
+              Navigator.pushReplacementNamed(
+                context,
+                AppRoutes.login,
+              );
             },
           ),
         ],
