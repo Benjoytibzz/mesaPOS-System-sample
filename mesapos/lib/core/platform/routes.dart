@@ -12,4 +12,6 @@ class AppRoutes {
 
   // Staff
   static const staffDashboard = '/staff/dashboard';
+  static const bookingManagement = '/staff/booking';
+  
 }

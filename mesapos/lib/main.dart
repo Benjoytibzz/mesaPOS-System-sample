@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+
+
 import 'core/platform/routes.dart';
+
 import 'core/features/auth/login_screen.dart';
 import 'core/features/admin/admin_dashboard.dart';
 import 'core/features/menu_management/menu_management.dart';
 import 'core/features/staff_management/staff_management.dart';
+import 'core/features/booking_management/booking_management_screen.dart'; // ✅ NEW
 import 'core/features/reports_management/reports_management.dart';
 import 'core/features/staff/staff_dashboard.dart';
 import 'core/features/settings_management/settings_management.dart';
@@ -23,10 +27,11 @@ class POSApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: AppRoutes.login,
       routes: {
-        AppRoutes.login: (_) =>  LoginScreen(),
+        AppRoutes.login: (_) => LoginScreen(),
         AppRoutes.adminDashboard: (_) => const AdminDashboard(),
         AppRoutes.menuManagement: (_) => const MenuManagementScreen(),
         AppRoutes.staffManagement: (_) => const StaffManagementScreen(),
+        AppRoutes.bookingManagement: (_) => const BookingManagementScreen(), // ✅ ADDED
         AppRoutes.reportsManagement: (_) => const ReportsManagementScreen(),
         AppRoutes.settingsManagement: (_) => const SettingsManagementScreen(),
         AppRoutes.staffDashboard: (_) => const StaffDashboard(),
