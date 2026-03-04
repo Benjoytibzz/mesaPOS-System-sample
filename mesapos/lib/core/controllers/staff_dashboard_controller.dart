@@ -31,9 +31,42 @@ class StaffDashboardController extends ChangeNotifier {
       );
 
       recentOrders = [
-        OrderModel(orderId: 'ORD-2026-0012', tableNumber: 5, itemsCount: 3, totalAmount: 45.50, staffName: 'John Smith', time: '10:30 AM', status: 'PAID'),
-        OrderModel(orderId: 'ORD-2026-0011', tableNumber: 5, itemsCount: 3, totalAmount: 45.50, staffName: 'John Smith', time: '10:30 AM', status: 'PAID'),
-        OrderModel(orderId: 'ORD-2026-0010', tableNumber: 5, itemsCount: 3, totalAmount: 45.50, staffName: 'John Smith', time: '10:30 AM', status: 'PENDING'),
+        OrderModel(
+          id: '1',
+          orderId: 'ORD-2026-0012',
+          tableNumber: 5,
+          staffName: 'John Smith',
+          time: DateTime.now(),
+          status: OrderStatus.paid,
+          items: [],
+          subtotal: 40.0,
+          tax: 5.5,
+          total: 45.50,
+        ),
+        OrderModel(
+          id: '2',
+          orderId: 'ORD-2026-0011',
+          tableNumber: 5,
+          staffName: 'John Smith',
+          time: DateTime.now(),
+          status: OrderStatus.paid,
+          items: [],
+          subtotal: 40.0,
+          tax: 5.5,
+          total: 45.50,
+        ),
+        OrderModel(
+          id: '3',
+          orderId: 'ORD-2026-0010',
+          tableNumber: 5,
+          staffName: 'John Smith',
+          time: DateTime.now(),
+          status: OrderStatus.pending,
+          items: [],
+          subtotal: 40.0,
+          tax: 5.5,
+          total: 45.50,
+        ),
       ];
     } catch (e) {
       // Handle error

@@ -1,3 +1,5 @@
+enum StaffRole { host, cashier, admin, staff }
+
 class StaffModel {
   final int? id;
   final String username;
@@ -5,6 +7,8 @@ class StaffModel {
   final String lastName;
   final String passwordHash;
   final String role;
+  final String? email;
+  final String? phone;
   final int synced;     // 0 = not synced, 1 = synced
   final int isActive;   // 0 = inactive, 1 = active
 
@@ -15,9 +19,13 @@ class StaffModel {
     required this.lastName,
     required this.passwordHash,
     required this.role,
+    this.email,
+    this.phone,
     this.synced = 0,
     this.isActive = 1,
   });
+
+  String get fullName => '$firstName $lastName';
 
   Map<String, dynamic> toMap() {
     return {
@@ -27,6 +35,8 @@ class StaffModel {
       'last_name': lastName,
       'password_hash': passwordHash,
       'role': role,
+      'email': email,
+      'phone': phone,
       'synced': synced,
       'is_active': isActive,
     };
@@ -40,6 +50,8 @@ class StaffModel {
       lastName: map['last_name'],
       passwordHash: map['password_hash'],
       role: map['role'],
+      email: map['email'],
+      phone: map['phone'],
       synced: map['synced'],
       isActive: map['is_active'],
     );

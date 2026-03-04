@@ -1,104 +1,105 @@
 import '../models/booking_model.dart';
-import '../services/booking_service.dart';
+import '../services/database_service.dart';
+import '../services/api_service.dart';
 
 class BookingRepository {
-  final BookingService _service;
+  final DatabaseService _databaseService;
+  final ApiService _apiService;
 
-  BookingRepository(this._service);
+  BookingRepository({
+    required DatabaseService databaseService,
+    required ApiService apiService,
+  })  : _databaseService = databaseService,
+        _apiService = apiService;
 
-  // ======================================================
-  // CRUD
-  // ======================================================
-
-  Future<void> create(Booking booking) =>
-      _service.createBooking(booking);
-
-  Future<List<Booking>> getAll() =>
-      _service.getAllBookings();
-
-  Future<Booking?> getById(String id) =>
-      _service.getBookingById(id);
-
-  Future<void> update(String id, Booking booking) =>
-      _service.updateBooking(id, booking);
-
-  Future<void> delete(String id) =>
-      _service.deleteBooking(id);
-
-  // ======================================================
-  // ⭐ FILTERING
-  // ======================================================
-
-  Future<List<Booking>> getByStatus(String status) async {
-    final list = await _service.getAllBookings();
-    return list
-        .where((b) =>
-            b.status.toLowerCase() == status.toLowerCase())
-        .toList();
+  // Get all bookings
+  Future<List<BookingModel>> getBookings() async {
+    return await _databaseService.getBookings();
   }
 
-  Future<List<Booking>> search(String query) async {
-    final list = await _service.getAllBookings();
-    final q = query.toLowerCase();
+  // Get bookings by status
+  Future<List<BookingModel>> getBookingsByStatus(BookingStatus status) async {
+    final allBookings = await _databaseService.getBookings();
+    return allBookings.where((b) => b.status == status).toList();
+  }
 
-    return list.where((b) {
-      return b.customerName.toLowerCase().contains(q) ||
-          b.service.toLowerCase().contains(q) ||
-          b.bookingId.toLowerCase().contains(q);
+  // Get bookings assigned to specific staff
+  Future<List<BookingModel>> getAssignedBookings(String staffId) async {
+    final allBookings = await _databaseService.getBookings();
+    return allBookings.where((b) => b.assignedStaffId == staffId).toList();
+  }
+
+  // Get booking by ID
+  Future<BookingModel?> getBookingById(String id) async {
+    return await _databaseService.getBookingById(id);
+  }
+
+  // Update booking status
+  Future<void> updateBookingStatus(String bookingId, BookingStatus newStatus) async {
+    final booking = await _databaseService.getBookingById(bookingId);
+    if (booking != null) {
+      final updatedBooking = booking.copyWith(
+        status: newStatus,
+        lastUpdated: DateTime.now(),
+      );
+      await _databaseService.updateBooking(updatedBooking);
+      
+      // Sync with API in real app
+      try {
+        await _apiService.patch('bookings/$bookingId', data: {
+          'status': newStatus.toString().split('.').last,
+        });
+      } catch (e) {
+        // Handle sync error
+      }
+    }
+  }
+
+  // Add notes to booking
+  Future<void> addBookingNotes(String bookingId, String notes) async {
+    final booking = await _databaseService.getBookingById(bookingId);
+    if (booking != null) {
+      final updatedBooking = booking.copyWith(
+        notes: notes,
+        lastUpdated: DateTime.now(),
+      );
+      await _databaseService.updateBooking(updatedBooking);
+    }
+  }
+
+  // Get booking counts
+  Future<Map<String, int>> getBookingCounts(String staffId) async {
+    final assigned = await getAssignedBookings(staffId);
+    return {
+      'assigned': assigned.length,
+      'pending': assigned.where((b) => b.status == BookingStatus.pending).length,
+      'confirmed': assigned.where((b) => b.status == BookingStatus.confirmed).length,
+      'completed': assigned.where((b) => b.status == BookingStatus.completed).length,
+      'cancelled': assigned.where((b) => b.status == BookingStatus.cancelled).length,
+      'rejected': assigned.where((b) => b.status == BookingStatus.rejected).length,
+    };
+  }
+
+  // Search bookings
+  Future<List<BookingModel>> searchBookings(String query) async {
+    final allBookings = await _databaseService.getBookings();
+    if (query.isEmpty) return allBookings;
+    
+    final lowerQuery = query.toLowerCase();
+    return allBookings.where((b) {
+      return b.customerName.toLowerCase().contains(lowerQuery) ||
+          b.service.toLowerCase().contains(lowerQuery) ||
+          b.bookingId.toLowerCase().contains(lowerQuery);
     }).toList();
   }
 
-  Future<List<Booking>> filterByDate(DateTime date) async {
-    final list = await _service.getAllBookings();
-
-    return list.where((b) {
+  // Filter bookings by date
+  Future<List<BookingModel>> filterBookingsByDate(DateTime date) async {
+    final allBookings = await _databaseService.getBookings();
+    return allBookings.where((b) {
       return b.dateTime.year == date.year &&
           b.dateTime.month == date.month &&
           b.dateTime.day == date.day;
     }).toList();
   }
-
-  // ======================================================
-  // ⭐ DASHBOARD STATS
-  // ======================================================
-
-  Future<int> countAll() async {
-    final list = await _service.getAllBookings();
-    return list.length;
-  }
-
-  Future<int> countByStatus(String status) async {
-    final list = await _service.getAllBookings();
-    return list
-        .where((b) =>
-            b.status.toLowerCase() == status.toLowerCase())
-        .length;
-  }
-
-  Future<int> countPending() => countByStatus("Pending");
-  Future<int> countConfirmed() => countByStatus("Confirmed");
-  Future<int> countCompleted() => countByStatus("Completed");
-  Future<int> countCancelled() => countByStatus("Cancelled");
-  Future<int> countRejected() => countByStatus("Rejected");
-
-  // ======================================================
-  // ⭐ FINANCIAL STATS (VERY USEFUL)
-  // ======================================================
-
-  Future<double> totsalRevenue() async {
-    final list = await _service.getAllBookings();
-    return list.fold<double>(
-      0.0,
-      (sum, booking) => sum + booking.totalAmount,
-    );
-  }
-
-  Future<int> totalItemsSold() async {
-    final list = await _service.getAllBookings();
-    return list.fold<int>(
-      0,
-      (sum, booking) => sum + booking.itemsCount,
-    );
-  }
 }
-

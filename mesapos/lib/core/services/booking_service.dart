@@ -1,12 +1,12 @@
-import '../models/booking_model.dart';
+import 'package:mesapos/core/models/booking_model.dart';
 
-class BookingService {
-  final List<Booking> _bookings = [];
+class BookingModelService {
+  final List<BookingModel> _bookings = [];
 
   // ======================================================
   // CREATE
   // ======================================================
-  Future<void> createBooking(Booking booking) async {
+  Future<void> createBookingModel(BookingModel booking) async {
     await Future.delayed(const Duration(milliseconds: 200));
     _bookings.add(booking);
   }
@@ -14,7 +14,7 @@ class BookingService {
   // ======================================================
   // READ ALL (SAFE COPY)
   // ======================================================
-  Future<List<Booking>> getAllBookings() async {
+  Future<List<BookingModel>> getAllBookingModels() async {
     await Future.delayed(const Duration(milliseconds: 200));
     return List.unmodifiable(_bookings);
   }
@@ -22,7 +22,7 @@ class BookingService {
   // ======================================================
   // READ ONE (SAFE NULL RETURN)
   // ======================================================
-  Future<Booking?> getBookingById(String id) async {
+  Future<BookingModel?> getBookingModelById(String id) async {
     await Future.delayed(const Duration(milliseconds: 200));
 
     try {
@@ -35,22 +35,22 @@ class BookingService {
   // ======================================================
   // UPDATE
   // ======================================================
-  Future<void> updateBooking(String id, Booking updatedBooking) async {
+  Future<void> updateBookingModel(String id, BookingModel updatedBookingModel) async {
     await Future.delayed(const Duration(milliseconds: 200));
 
     final index = _bookings.indexWhere((b) => b.bookingId == id);
 
     if (index == -1) {
-      throw Exception("Booking not found");
+      throw Exception("BookingModel not found");
     }
 
-    _bookings[index] = updatedBooking;
+    _bookings[index] = updatedBookingModel;
   }
 
   // ======================================================
   // DELETE
   // ======================================================
-  Future<void> deleteBooking(String id) async {
+  Future<void> deleteBookingModel(String id) async {
     await Future.delayed(const Duration(milliseconds: 200));
     _bookings.removeWhere((b) => b.bookingId == id);
   }

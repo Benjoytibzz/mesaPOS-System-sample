@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../controllers/booking_controller.dart';
-import '../../models/booking_model.dart';
+import 'package:mesapos/core/controllers/booking_controller.dart';
+import 'package:mesapos/core/models/booking_model.dart';
 
 // ✅ ADD THESE IMPORTS (adjust path if needed)
-import '../widgets/staff_drawer.dart';
-import '../../platform/routes.dart';
+import 'package:mesapos/core/features/widgets/staff_drawer.dart';
+import 'package:mesapos/core/platform/routes.dart';
 
 class BookingManagementScreen extends StatefulWidget {
   const BookingManagementScreen({super.key});
@@ -506,7 +506,7 @@ class _BookingManagementScreenState extends State<BookingManagementScreen> {
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: filteredBookings.length,
-                          separatorBuilder: (_, __) => const Divider(height: 1, color: Colors.black12),
+                          separatorBuilder: (_, _) => const Divider(height: 1, color: Colors.black12),
                           itemBuilder: (_, i) => tableRow(filteredBookings[i]),
                         )
                       ],

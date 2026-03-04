@@ -113,7 +113,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
                       const InputDecoration(labelText: 'Password'),
                 ),
                 DropdownButtonFormField(
-                  value: role,
+                  initialValue: role,
                   items: const [
                     DropdownMenuItem(
                         value: 'staff', child: Text('Staff')),

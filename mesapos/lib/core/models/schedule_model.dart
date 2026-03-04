@@ -1,43 +1,109 @@
 import 'package:flutter/material.dart';
 
-class Holiday {
+enum ShiftType { duty, holiday, dayOff }
+
+class ScheduleModel {
+  final String id;
   final DateTime date;
-  final String name;
+  final ShiftType shiftType;
+  final TimeOfDay? startTime;
+  final TimeOfDay? endTime;
+  final String? notes;
+  final bool isAvailable;
 
-  Holiday({required this.date, required this.name});
+  ScheduleModel({
+    required this.id,
+    required this.date,
+    required this.shiftType,
+    this.startTime,
+    this.endTime,
+    this.notes,
+    this.isAvailable = true,
+  });
 
-  factory Holiday.fromJson(Map<String, dynamic> json) {
-    return Holiday(
-      date: DateTime.parse(json['date']),
-      name: json['name'],
+  factory ScheduleModel.fromJson(Map<String, dynamic> json) {
+    return ScheduleModel(
+      id: json['id'] ?? '',
+      date: DateTime.parse(json['date'] ?? DateTime.now().toIso8601String()),
+      shiftType: _parseShiftType(json['shiftType']),
+      startTime: json['startTime'] != null 
+          ? _parseTimeOfDay(json['startTime']) 
+          : null,
+      endTime: json['endTime'] != null 
+          ? _parseTimeOfDay(json['endTime']) 
+          : null,
+      notes: json['notes'],
+      isAvailable: json['isAvailable'] ?? true,
     );
+  }
+
+  static ShiftType _parseShiftType(String? type) {
+    switch (type?.toLowerCase()) {
+      case 'duty':
+      case 'duty day':
+        return ShiftType.duty;
+      case 'holiday':
+        return ShiftType.holiday;
+      case 'dayoff':
+      case 'day off':
+        return ShiftType.dayOff;
+      default:
+        return ShiftType.duty;
+    }
+  }
+
+  static TimeOfDay _parseTimeOfDay(String timeString) {
+    final parts = timeString.split(':');
+    return TimeOfDay(
+      hour: int.parse(parts[0]),
+      minute: int.parse(parts[1]),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'date': date.toIso8601String(),
+      'shiftType': shiftType.toString().split('.').last,
+      'startTime': startTime != null 
+          ? '${startTime!.hour.toString().padLeft(2, '0')}:${startTime!.minute.toString().padLeft(2, '0')}'
+          : null,
+      'endTime': endTime != null 
+          ? '${endTime!.hour.toString().padLeft(2, '0')}:${endTime!.minute.toString().padLeft(2, '0')}'
+          : null,
+      'notes': notes,
+      'isAvailable': isAvailable,
+    };
+  }
+
+  String get shiftDisplay {
+    switch (shiftType) {
+      case ShiftType.duty:
+        return 'Duty Day';
+      case ShiftType.holiday:
+        return 'Holiday';
+      case ShiftType.dayOff:
+        return 'Day Off';
+    }
+  }
+
+  Color get shiftColor {
+    switch (shiftType) {
+      case ShiftType.duty:
+        return const Color(0xFF4CAF50);
+      case ShiftType.holiday:
+        return const Color(0xFFFFA726);
+      case ShiftType.dayOff:
+        return const Color(0xFF9E9E9E);
+    }
+  }
+
+  String? timeDisplay(BuildContext context) {
+    if (startTime != null && endTime != null) {
+      return '${startTime!.format(context)} - ${endTime!.format(context)}';
+    }
+    return null;
   }
 }
 
-class TimeSlot {
-  final TimeOfDay time;
-  final bool isAvailable;
-
-  TimeSlot({required this.time, this.isAvailable = true});
-}
-
-class DailySchedule {
-  final DateTime date;
-  final bool isDayOff;
-  final TimeOfDay? startTime;
-  final TimeOfDay? endTime;
-  final Holiday? holiday;
-  final List<TimeSlot> slots;
-
-  DailySchedule({
-    required this.date,
-    this.isDayOff = false,
-    this.startTime,
-    this.endTime,
-    this.holiday,
-    this.slots = const [],
-  });
-
-  bool get isHoliday => holiday != null;
-  bool get isDutyDay => !isDayOff && !isHoliday;
-}
+// Note: TimeOfDay formatting requires BuildContext, so we'll handle that in the view
